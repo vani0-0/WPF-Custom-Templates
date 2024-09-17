@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Starter Template v2", "WPF Starter Template v2\WPF Starter Template v2.csproj", "{CD98CB2D-33A6-4932-913C-2114FC8AD8A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Starter v1", "WPF Starter v1\WPF Starter v1.csproj", "{98A2FA9D-5893-4723-A974-7DB7DC2E86CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CD98CB2D-33A6-4932-913C-2114FC8AD8A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD98CB2D-33A6-4932-913C-2114FC8AD8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD98CB2D-33A6-4932-913C-2114FC8AD8A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A2FA9D-5893-4723-A974-7DB7DC2E86CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A2FA9D-5893-4723-A974-7DB7DC2E86CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A2FA9D-5893-4723-A974-7DB7DC2E86CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A2FA9D-5893-4723-A974-7DB7DC2E86CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
