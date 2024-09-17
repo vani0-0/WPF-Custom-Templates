@@ -18,7 +18,7 @@ namespace WPF_Starter.Abstract
 
         public string ApplicationName => "$rootnamespace$";
 
-        public string Title => $"{ApplicationName} v0";
+        public string Title => $"{ApplicationName} v0.4";
 
         #endregion
 
