@@ -1,1 +1,1 @@
-# My Custom Templates
+# WPF Custom Templates
