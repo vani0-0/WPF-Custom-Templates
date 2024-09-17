@@ -7,8 +7,12 @@ namespace WPF_Starter.ViewModels
     {
         private readonly MessageStore _messageStore;
 
-        public Message Message => _messageStore.Message;
+        #region Properties
 
+        public Message Message => _messageStore.Message;
+        
+        #endregion
+        
         public DisplayMessageViewModel(MessageStore messageStore)
         {
             _messageStore = messageStore;

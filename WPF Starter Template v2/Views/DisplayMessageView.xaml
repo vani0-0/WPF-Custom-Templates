@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:WPF_Starter.Views" 
              xmlns:viewmodels="clr-namespace:WPF_Starter.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:DisplayMessageViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d">
     <Grid>
         <TextBlock Text="{Binding Message.Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </Grid>
