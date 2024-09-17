@@ -16,9 +16,9 @@ namespace WPF_Starter_v1.Abstract
 
         #region Version
 
-        public string ApplicationName => "$rootnamespace$";
+        public string ApplicationName => "$safeprojectname$";
 
-        public string Title => $"{ApplicationName} v0";
+        public string Title => $"{ApplicationName} v0.24";
 
         #endregion
 
