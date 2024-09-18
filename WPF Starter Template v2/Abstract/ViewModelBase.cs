@@ -1,12 +1,16 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using Syncfusion.DocIO.DLS;
+using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace WPF_Starter.Abstract
@@ -223,6 +227,7 @@ namespace WPF_Starter.Abstract
 
             return path;
         }
+
         /// <summary>
         /// Open the folder chooser and return the selected paths
         /// </summary>
@@ -254,7 +259,6 @@ namespace WPF_Starter.Abstract
 
             return path;
         }
-
         /// <summary>
         /// Open the folder chooser and return the path
         /// </summary>
@@ -286,6 +290,7 @@ namespace WPF_Starter.Abstract
 
             return path;
         }
+
         /// <summary>
         /// Get the column
         /// </summary>
@@ -336,6 +341,102 @@ namespace WPF_Starter.Abstract
         }
 
         /// <summary>
+        /// Validate if the filepath is being used
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public bool IsFileBeingUsed(string filePath)
+        {
+            bool result = false;
+
+            try
+            {
+                // Attempt to open the file with specific FileShare options
+                using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    result = false;
+                }
+            }
+            catch (IOException)
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reports"></param>
+        /// <param name="outFile"></param>
+        /// <param name="fontName"></param>
+        public void GenerateExcelReportFile<T>(List<T> reports, string outFile, string fontName = "Calibri")
+        {
+            string titleCell = "A1";
+            string fileNameCell = "A2";
+
+            int headersRow = 3;
+            int dataRow = headersRow + 1;
+            using (ExcelEngine engine = new ExcelEngine())
+            {
+                IApplication application = engine.Excel;
+                IWorkbook workbook = application.Workbooks.Create(1);
+                IWorksheet worksheet = workbook.Worksheets[0];
+                application.DefaultVersion = ExcelVersion.Xlsx;
+
+                PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                Debug.WriteLine($"{string.Join(", ", properties.Select(p => FormatPropertyName(p.Name)).ToList())}", $"Model: {typeof(T).Name}");
+
+                #region Column Headers
+
+                List<string> columnHeaders = properties
+                    .Select(p => FormatPropertyName(p.Name))
+                    .ToList();
+
+                // Title
+                worksheet.Range[titleCell].Text = Title;
+                worksheet.Range[titleCell].CellStyle.Font.FontName = fontName;
+
+                worksheet.Range[fileNameCell].Text = Path.GetFileName(outFile);
+                worksheet.Range[fileNameCell].CellStyle.Font.Bold = true;
+                worksheet.Range[fileNameCell].CellStyle.Font.FontName = fontName;
+
+                for (int i = 1; i <= columnHeaders.Count; i++)
+                {
+                    IRange cell = worksheet[headersRow, i];
+                    cell.Text = columnHeaders[i - 1];
+                    cell.CellStyle.Font.Bold = true;
+                    cell.CellStyle.Font.FontName = fontName;
+                    cell.CellStyle.Color = Color.FromArgb(180, 198, 231);
+                }
+
+                #endregion
+
+                #region Data
+
+                foreach (T item in reports)
+                {
+                    for (int col = 1; col <= properties.Length; col++)
+                    {
+                        var value = properties[col - 1].GetValue(item);
+                        worksheet[dataRow, col].Text = value.ToString();
+                    }
+                    dataRow++;
+                }
+
+                #endregion
+
+                worksheet.UsedRange.WrapText = false;
+                worksheet.UsedRange.AutofitColumns();
+                worksheet.UsedRange.AutofitRows();
+                workbook.SaveAs(outFile);
+            }
+        }
+        #endregion
+
+        /// <summary>
         /// Create a placeholder documentation file with basic content.
         /// </summary>
         /// <param name="filePath">The path where the file will be created.</param>
@@ -369,34 +470,16 @@ namespace WPF_Starter.Abstract
             }
         }
 
-
-
-        /// <summary>
-        /// Validate if the filepath is being used
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        public bool IsFileBeingUsed(string filePath)
+        private string FormatPropertyName(string propertyName)
         {
-            bool result = false;
-
-            try
-            {
-                // Attempt to open the file with specific FileShare options
-                using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    result = false;
-                }
-            }
-            catch (IOException)
-            {
-                result = true;
-            }
-
-            return result;
+            // Replace underscores with spaces
+            string formattedName = propertyName.Replace("_", " ");
+            // Insert a space between lowercase and uppercase letters
+            formattedName = Regex.Replace(formattedName, "(\\p{Ll})(\\p{Lu})", "$1 $2");
+            // Return the formatted name
+            return formattedName;
         }
 
-        #endregion
 
     }
 
