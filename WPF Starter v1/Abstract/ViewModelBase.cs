@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using Syncfusion.DocIO.DLS;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +19,7 @@ namespace WPF_Starter_v1.Abstract
 
         public string ApplicationName => "$safeprojectname$";
 
-        public string Title => $"{ApplicationName} v0.24";
+        public string Title => $"{ApplicationName} v0.2";
 
         #endregion
 
@@ -43,6 +44,27 @@ namespace WPF_Starter_v1.Abstract
             catch (Exception ex2)
             {
                 ErrorMessage(ex2);
+            }
+        }
+
+        /// <summary>
+        /// Display an error message
+        /// </summary>
+        /// <param name="ex">Your exception</param>
+        /// <param name="message">Title text. Typically, put here your method name</param>
+        public static void ErrorMessage(Exception ex, string title)
+        {
+            try
+            {
+                StackTrace stackTrace = new StackTrace(ex);
+                System.Reflection.MethodBase method = stackTrace.GetFrame(stackTrace.FrameCount - 1).GetMethod();
+                string titleText = title;
+
+                MessageBox.Show(string.Format(ex.Message + "\n\n" + ex.StackTrace + "\n\n{0}", "Please screenshot and send procedures on how this error occured. Thank you."), titleText, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex2)
+            {
+                ErrorMessage(ex2, title);
             }
         }
 
@@ -292,13 +314,61 @@ namespace WPF_Starter_v1.Abstract
         {
             try
             {
-                Process.Start(@"Assets\TRB Image Manager 2023.docx");
+                string docFileName = $"{Title}.docx";
+                string docPath = Path.Combine("Assets", docFileName);
+
+                if (!File.Exists(docPath))
+                {
+                    CreatePlaceHolderFile(docPath);
+                }
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = docPath,
+                    UseShellExecute = true
+                });
             }
             catch (Exception ex)
             {
-                ErrorMessage(ex);
+                string errorTitle = $"{ApplicationName} - Documentation Error";
+                ErrorMessage(ex, errorTitle);
             }
         }
+
+        /// <summary>
+        /// Create a placeholder documentation file with basic content.
+        /// </summary>
+        /// <param name="filePath">The path where the file will be created.</param>
+        private void CreatePlaceHolderFile(string docPath)
+        {
+            try
+            {
+                using (WordDocument document = new WordDocument())
+                {
+
+                    WSection section = document.AddSection() as WSection;
+
+                    IWParagraph paragraph = section.HeadersFooters.Header.AddParagraph();
+
+                    paragraph = section.AddParagraph();
+                    paragraph.ApplyStyle(BuiltinStyle.Heading1);
+                    WTextRange textRange = paragraph.AppendText($"Documentation for {ApplicationName}") as WTextRange;
+
+                    paragraph = section.AddParagraph();
+                    paragraph.ApplyStyle(BuiltinStyle.Normal);
+                    textRange = paragraph.AppendText("This is a placeholder for the documentation file.") as WTextRange;
+
+                    document.Save(docPath);
+
+                    document.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage(ex, $"{ApplicationName} - Documentation Creation Error");
+            }
+        }
+
 
 
         /// <summary>
